@@ -406,7 +406,10 @@ tr:hover td {
 
 @media (max-width: 480px) {
     .app-shell { padding: 22px 16px; }
-    .input-row, .input-row.cols-3 { grid-template-columns: 1fr 1fr; gap: 12px; }
+    .input-row, .input-row.cols-3 { grid-template-columns: 1fr; gap: 0; }
+    .input-row .input-group, .input-row.cols-3 .input-group { margin-bottom: 18px; }
+    .input-row .input-group:last-child, .input-row.cols-3 .input-group:last-child { margin-bottom: 0; }
+    .stat-grid { grid-template-columns: 1fr; }
     .result-item .value { font-size: 15px; }
     .result-item.highlight .value { font-size: 18px; }
     h1 { font-size: 19px; }
