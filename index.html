@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="ur">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>DevOp360 Calculators — Ride Profit &amp; Car Rental</title>
+<link rel="stylesheet" href="styles.css" />
+<link rel="manifest" href="manifest.json" />
+<meta name="theme-color" content="#0b1324" />
+<link rel="apple-touch-icon" href="icons/icon-192.png" />
+<script>
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js');
+    });
+}
+</script>
+</head>
+<body>
+
+<div class="app-shell">
+
+    <div class="tab-toggle">
+        <button type="button" class="tab-btn active" id="tabRentalBtn">Car Rental</button>
+        <button type="button" class="tab-btn" id="tabRideBtn">Ride Profit</button>
+    </div>
+
+    <section id="tab-rental" class="tab-panel active">
+
+        <h1>Car Rental Growth Calculator</h1>
+        <div class="subtitle">Unlimited target mode — simulate fleet growth with reinvested profit</div>
+
+        <div class="input-row">
+            <div class="input-group">
+                <label>Monthly Rent per Car <span>PKR</span></label>
+                <input type="number" id="rentPerCar" value="70000" step="5000">
+            </div>
+            <div class="input-group">
+                <label>Starting Cars Owned <span>cars</span></label>
+                <input type="number" id="startCars" value="3" min="1" step="1">
+            </div>
+        </div>
+
+        <div class="input-row">
+            <div class="input-group">
+                <label>Price per New Car <span>PKR</span></label>
+                <input type="number" id="carPrice" value="2450000" step="50000">
+            </div>
+            <div class="input-group">
+                <label>Target Cars <span>cars</span></label>
+                <input type="number" id="targetCars" value="100" step="1">
+            </div>
+        </div>
+
+        <div class="input-row">
+            <div class="input-group">
+                <label>Corporate Tax Rate <span>%</span></label>
+                <input type="number" id="taxRate" value="29" min="0" max="100" step="1">
+            </div>
+            <label class="checkbox-row" for="applyTax" style="align-self: end; margin-bottom: 0;">
+                <input type="checkbox" id="applyTax">
+                After-tax revenue
+            </label>
+        </div>
+
+        <div class="stat-grid" id="statsPanel"></div>
+
+        <div class="toolbar-row">
+            <span class="pill">Start Date: January 2027</span>
+            <button class="export-btn" id="exportCSV">Export to CSV</button>
+        </div>
+
+        <div id="warningMessage" class="warning-box" style="display:none;"></div>
+
+        <div class="table-wrapper">
+            <table id="growthTable">
+                <thead>
+                    <tr>
+                        <th>Car #</th>
+                        <th>Purchase Month</th>
+                        <th>Purchase Year</th>
+                        <th>Total Cars</th>
+                        <th id="profitColHeader">Monthly Profit (PKR)</th>
+                        <th>Months to Get This Car</th>
+                        <th>Cumulative Months</th>
+                        <th>Time from Start</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody"></tbody>
+            </table>
+        </div>
+
+        <div class="footer-note">
+            <strong>How it works:</strong> Monthly profit = (total cars) × rent. Time for next car = car price ÷ current monthly profit.
+            You can set any target number — 50, 100, 500, 1000+ cars — no artificial limits.
+        </div>
+
+    </section>
+
+    <section id="tab-ride" class="tab-panel">
+
+        <h1>Ride Profit Calculator</h1>
+        <div class="subtitle">Karachi — Petrol Rs. 392/L (live +2) · 8-12% Commission</div>
+
+        <div class="mode-chips" id="modeChips">
+            <button type="button" class="mode-chip active" data-mode="ridefare">Ride Fare</button>
+            <button type="button" class="mode-chip" data-mode="km">KM Drive</button>
+            <button type="button" class="mode-chip" data-mode="target">KM Target</button>
+        </div>
+
+        <div class="input-row cols-3" id="row1">
+            <div class="input-group" id="dailyTargetGroup" style="display:none;">
+                <label>Daily Net Profit <span>Rs./day</span></label>
+                <input type="number" id="dailyTarget" value="12000" step="100" min="500" />
+            </div>
+
+            <div class="input-group" id="dailyKmGroup" style="display:none;">
+                <label>Daily KM Drive <span>km/day</span></label>
+                <input type="number" id="dailyKmInput" value="200" step="5" min="1" />
+            </div>
+
+            <div class="input-group" id="myLocationGroup">
+                <label>Pickup <span>km</span></label>
+                <input type="number" id="myLocation" value="3" step="1" min="0" />
+            </div>
+
+            <div class="input-group" id="pickupGroup">
+                <label>Drop-off <span>km</span></label>
+                <input type="number" id="pickup" value="10" step="1" min="0" />
+            </div>
+
+            <div class="input-group" id="fareGroup" style="display:none;">
+                <label>Per km Fare <span>Rs./km</span></label>
+                <input type="number" id="fare" value="65" step="1" min="10" />
+            </div>
+
+            <div class="input-group" id="customerFareGroup">
+                <label>Fare Price <span>Rs. (total)</span></label>
+                <input type="number" id="customerFare" value="" step="10" min="0" placeholder="Enter fare" />
+            </div>
+
+            <div class="input-group" id="averageGroup">
+                <label>Average <span>km/liter</span></label>
+                <input type="number" id="average" value="14.5" step="0.5" min="8" />
+            </div>
+        </div>
+
+        <div class="input-row cols-3" id="row2">
+            <div class="input-group">
+                <label>Petrol Price <span>Rs./liter</span></label>
+                <input type="number" id="fuelRate" value="392" step="1" min="200" />
+            </div>
+
+            <div class="input-group" id="commissionGroup">
+                <label>Commission <span>%</span></label>
+                <input type="number" id="commission" value="12" step="0.5" min="0" max="20" />
+            </div>
+
+            <div class="input-group" id="workingDaysGroup" style="display:none;">
+                <label> Working Days <span>days/month</span></label>
+                <input type="number" id="workingDays" value="30" step="1" min="1" max="31" />
+            </div>
+        </div>
+
+        <div class="result-box" id="resultBoxMain" style="display:none;">
+
+            <div class="result-item">
+                <span class="label" id="dailyKmLabel">Daily Required Distance</span>
+                <span class="value blue" id="dailyKm">— km</span>
+            </div>
+            <div class="result-item">
+                <span class="label">Daily Gross Earning</span>
+                <span class="value" id="dailyGross">Rs. —</span>
+            </div>
+            <div class="result-item highlight">
+                <span class="label">Daily Net Profit</span>
+                <span class="value gold" id="dailyProfit">Rs. —</span>
+            </div>
+
+            <div id="monthlyBreakdown">
+                <div class="divider"></div>
+                <div class="section-label">Monthly Breakdown (<span id="daysLabel">30</span> working days)</div>
+
+                <div class="result-item">
+                    <span class="label">Gross Earning (Fares)</span>
+                    <span class="value teal" id="monthlyGross">Rs. —</span>
+                </div>
+                <div class="result-item">
+                    <span class="label">Fuel Cost (−)</span>
+                    <span class="value orange" id="monthlyFuel">Rs. —</span>
+                </div>
+                <div class="result-item">
+                    <span class="label">App Commission (−)</span>
+                    <span class="value orange" id="monthlyCommission">Rs. —</span>
+                </div>
+
+                <div class="result-item highlight">
+                    <span class="label">Monthly Net Profit</span>
+                    <span class="value gold" id="monthlyProfit">Rs. —</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="result-box" id="resultBoxRideFare">
+            <div class="result-item">
+                <span class="label">Expected Fare Price</span>
+                <span class="value teal" id="rideExpectedFare">Rs. —</span>
+            </div>
+            <div class="result-item">
+                <span class="label">Per km Fare</span>
+                <span class="value blue" id="rideFarePerKm">Rs. —</span>
+            </div>
+            <div class="result-item">
+                <span class="label">Fuel Cost</span>
+                <span class="value orange" id="rideFuelCost">Rs. —</span>
+            </div>
+            <div class="result-item">
+                <span class="label">Commission</span>
+                <span class="value orange" id="rideCommission">Rs. —</span>
+            </div>
+            <div class="result-item highlight">
+                <span class="label">Net Profit</span>
+                <span class="value gold" id="rideProfit">Rs. —</span>
+            </div>
+        </div>
+
+        <div class="footer-note" id="footerNoteMain" style="display:none;">
+            <strong>Note:</strong> Commission 8–12% (InDrive/Yango). Fuel &amp; commission deducted
+            from gross fare earnings to get Net Profit. Switch mode above: set a profit target to
+            find required daily km, or set your daily km to see the resulting profit.
+        </div>
+
+        <div class="footer-note" id="footerNoteRideFare">
+            <strong>Note:</strong> For one single ride only — Pickup + Drop-off KM are added
+            together, then used with the fare the customer paid to work out the per-km rate and
+            net profit after fuel &amp; commission.
+        </div>
+
+    </section>
+
+</div>
+
+<script src="calculator.js"></script>
+</body>
+</html>
