@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ride-calc-v2';
+const CACHE_NAME = 'ride-calc-v3';
 const ASSETS = [
     './index.html',
     './styles.css',
